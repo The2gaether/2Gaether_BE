@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 @RequestMapping("/users")
 @Controller
@@ -23,8 +22,7 @@ public class EmailController {
 //        return new ResponseEntity<>(emailCheckSuccessResponseDto, HttpStatus.OK);
 //        ModelAndView modelAndView = new ModelAndView();
 //        modelAndView.setViewName("/email/email");
-//        return modelAndView;
-        return "email2";
+        return "email2.html";
     }
 
     //@GetMapping("/pwreset/{emailCode}/{userEmail}")
