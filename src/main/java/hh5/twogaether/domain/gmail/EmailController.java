@@ -24,7 +24,7 @@ public class EmailController {
 //        ModelAndView modelAndView = new ModelAndView();
 //        modelAndView.setViewName("/email/email");
 //        return modelAndView;
-        return "/email/email";
+        return "email";
     }
 
     //@GetMapping("/pwreset/{emailCode}/{userEmail}")
