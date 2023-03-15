@@ -13,18 +13,18 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailServiceImpl emailServiceImpl;
-//     @ResponseBody
+    @ResponseBody
     @GetMapping("/email/{emailCode}/{userEmail}")
-    public ModelandView emailConfirm(@PathVariable String emailCode,
+    public String emailConfirm(@PathVariable String emailCode,
                                                                      @PathVariable String userEmail)  throws Exception {
         emailServiceImpl.emailLinkCheck(emailCode, userEmail);
 
         EmailCheckSuccessResponseDto emailCheckSuccessResponseDto = new EmailCheckSuccessResponseDto(200, ResponseMessage.EMAIL_SUCCESS_CHECK_LINK);
 //        return new ResponseEntity<>(emailCheckSuccessResponseDto, HttpStatus.OK);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("/email/email");
-        return modelAndView;
-//        return "/email/email";
+//        ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.setViewName("/email/email");
+//        return modelAndView;
+        return "/email/email";
     }
 
     //@GetMapping("/pwreset/{emailCode}/{userEmail}")
