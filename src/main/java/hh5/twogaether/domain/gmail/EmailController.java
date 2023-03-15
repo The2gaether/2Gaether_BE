@@ -20,7 +20,7 @@ public class EmailController {
         EmailCheckSuccessResponseDto emailCheckSuccessResponseDto = new EmailCheckSuccessResponseDto(200, ResponseMessage.EMAIL_SUCCESS_CHECK_LINK);
 //        return new ResponseEntity<>(emailCheckSuccessResponseDto, HttpStatus.OK);
 
-        return "email2.";
+        return "email2.html";
     }
 
     //@GetMapping("/pwreset/{emailCode}/{userEmail}")
