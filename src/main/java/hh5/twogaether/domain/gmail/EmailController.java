@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/users")
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailServiceImpl emailServiceImpl;
@@ -19,6 +19,15 @@ public class EmailController {
 
         EmailCheckSuccessResponseDto emailCheckSuccessResponseDto = new EmailCheckSuccessResponseDto(200, ResponseMessage.EMAIL_SUCCESS_CHECK_LINK);
 //        return new ResponseEntity<>(emailCheckSuccessResponseDto, HttpStatus.OK);
-        return "인증 완료";
+
+        return "email2";
     }
+
+    //@GetMapping("/pwreset/{emailCode}/{userEmail}")
+    //public String pwReset(@PathVariable String emailCode,
+    //                     @PathVariable String userEmail)throws Exception {
+    //    emailServiceImpl.pwLinkCheck(emailCode, userEmail);
+    //    EmailCheckSuccessResponseDto emailCheckSuccessResponseDto = new EmailCheckSuccessResponseDto(200, ResponseMessage.EMAIL_SUCCESS_CHECK_LINK);
+    //    return "비밀번호를 초기화해주는 엄청난 html";
+    //}
 }

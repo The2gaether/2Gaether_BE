@@ -38,7 +38,7 @@ public class ChatController {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatMessageDto.getRoomId());
 
         ChatMessage chatMessage = new ChatMessage(chatRoom.getRoomId(), user, chatMessageDto.getMessage());
-        chatMessageRepository.saveAndFlush(chatMessage);
+        chatMessageRepository.save(chatMessage);
 
         ChatRoomRealResponseDto chatRoomRealResponseDto = new ChatRoomRealResponseDto(chatMessage);
 
