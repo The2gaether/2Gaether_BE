@@ -2,7 +2,11 @@
 
 ![투개더 리드미](https://user-images.githubusercontent.com/120078825/223928527-0912cecf-bc93-44af-b222-50c530ec0f83.png)
 
-현재 반려동물(강아지)와 함께 살고 있는 20대~40대 남녀가 사용자의 위치 기반을 이용하여 반경 3km 내 반려인&반려동물과 함께 산책을 할 수 있다.
+## **우리 강아지 주변 친구들이랑 같이 산책하자 !**
+
+위치 정보를 통해 주변 반려인들과 산책의 기회를 제공하는 웹앱 기획
+
+🐶[우리 강아지 친구를 만들어 보자! 투개더 사용해보기](https://twogaether.site)
 
 <br>
 
@@ -15,7 +19,11 @@
 
 <br>
 
-## 2. 기술 스택
+## 2. 아키텍쳐
+
+![image](https://user-images.githubusercontent.com/119824778/226522556-e856bfc9-8f4e-4fd1-aa10-56316c436490.png)
+
+<br>
 <img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/LINUX-005496?style=for-the-badge&logo=linux&logoColor=white"><img src="https://img.shields.io/badge/NGINX-3D1332?style=for-the-badge&logo=nginx&logoColor=white"><img src="https://img.shields.io/badge/STOMPJS-lightgrey?style=for-the-badge&logo=stompjs&logoColor=white">
 
 <br>
@@ -39,7 +47,18 @@
 
 <br>
 
-## 5. 개인 회고
+## 5. ERD
+
+![투개더](https://user-images.githubusercontent.com/119824778/226522267-0b1891f6-9c97-426a-bb85-6ceee31f3094.png)
+
+<br>
+
+## 5. 아키텍쳐 도입 배경
+[아키텍쳐 도입 배경 링크](https://pineapple-wrist-347.notion.site/82ef25bf258341a4a31fbad9f7a0e786)
+
+<br>
+
+## 7. 개인 회고
 
  - 고현우 : 
  - 이상휘 : 
