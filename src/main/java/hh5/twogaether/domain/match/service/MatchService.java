@@ -1,17 +1,15 @@
 package hh5.twogaether.domain.match.service;
 
 import hh5.twogaether.domain.dog.entity.Dog;
-import hh5.twogaether.domain.dog.repository.DogQueryRepository;
 import hh5.twogaether.domain.dog.repository.DogRepository;
-import hh5.twogaether.domain.loves.entity.Love;
 import hh5.twogaether.domain.match.dto.MatchDogResponseDto;
 import hh5.twogaether.domain.match.dto.MatchDto;
 import hh5.twogaether.domain.match.entity.Match;
 import hh5.twogaether.domain.match.entity.Pass;
+import hh5.twogaether.domain.match.repository.MatchQueryRepository;
 import hh5.twogaether.domain.match.repository.MatchRepository;
 import hh5.twogaether.domain.match.repository.PassRepository;
 import hh5.twogaether.domain.users.entity.User;
-import hh5.twogaether.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,38 +24,29 @@ import static java.util.Collections.shuffle;
 @RequiredArgsConstructor
 public class MatchService {
 
-    private final UserRepository userRepository;
     private final DogRepository dogRepository;
     private final MatchRepository matchRepository;
     private final PassRepository passRepository;
-    private final DogQueryRepository dogQueryRepository;
+    private final MatchQueryRepository matchQueryRepository;
 
     @Transactional
-    public MatchDogResponseDto getMatches(Long id) {
+    public MatchDogResponseDto getMatches(User me) {
 
         //내 개가 있을때 로직 시작
-        isExistMyDog(id);
+        isExistMyDog(me.getId());
 
         //기존에 저장된 리스트가 있을 시 기존 정보 사용, 없을 시 새 리스트 저장
-        if (matchRepository.findByCreatedBy(id).size() == 0) {
-            List<MatchDto> matchDtos = dogQueryRepository.findAllNotDeletedAndNotPassedDog(id);
-            User me = userRepository.findById(id).orElseThrow(
-                    ()-> new IllegalArgumentException("아무튼 안됨")
-            );
-            saveMatchedDogs(id, matchDtos, me);
+        if (matchRepository.findByCreatedBy(me.getId()).size() == 0) {
+            createMatches(me);
         }
         //좋아요, 싫어요 하지 않은 목록 불러와서 셔플
-        List<Match> matches = getAndShuffleMatches(id);
+        List<Match> matches = getAndShuffleMatches(me.getId());
 
         //다 넘겨서 남은 매칭상대가 없는 경우 Matches 다 지우고 다시 갱신
         if (matches.size() == 0) {
-            matchRepository.deleteAllByCreatedBy(id);
-            List<MatchDto> renewedDtos = dogQueryRepository.findAllNotDeletedAndNotPassedDog(id);
-            User renewedMe = userRepository.findById(id).orElseThrow(
-                    ()-> new IllegalArgumentException("아무튼 안됨")
-            );
-            saveMatchedDogs(id, renewedDtos, renewedMe);
-            matches = getAndShuffleMatches(id);
+            matchRepository.deleteAllByCreatedBy(me.getId());
+            createMatches(me);
+            matches = getAndShuffleMatches(me.getId());
         }
         //예외처리
         if (matches.size() == 0) {
@@ -111,11 +100,12 @@ public class MatchService {
 
     //Match 리스트 저장
     @Transactional
-    public void saveMatchedDogs(Long id, List<MatchDto> matchDtos, User me) {
+    public void createMatches(User me) {
+        List<MatchDto> matchDtos = matchQueryRepository.findAllNotDeletedAndNotPassedDog(me.getId());
         for (MatchDto dto : matchDtos) {
             double calculatedDistance = calculateDistance(me.getLatitude(), me.getLongitude(), dto.getLatitude(), dto.getLongitude());
             int roundDistance = roundDistance(calculatedDistance);
-            if ( me.getRanges() >= roundDistance && !dto.getOpponentId().equals(id) ) {
+            if ( me.getRanges() >= roundDistance && !dto.getOpponentId().equals(me.getId()) ) {
                 matchRepository.save(new Match(dto.getDogId(),dto.getOpponentId(),roundDistance));
             }
         }
@@ -138,5 +128,10 @@ public class MatchService {
             return 1;
         }
         return (int) Math.round(distance);
+    }
+
+    @Transactional
+    public void resetRejects() {
+        passRepository.deleteAllisNotLoved();
     }
 }

@@ -1,6 +1,7 @@
 package hh5.twogaether.domain.users.service;
 
 import hh5.twogaether.domain.gmail.EmailService;
+import hh5.twogaether.domain.users.dto.EmailOnlyDto;
 import hh5.twogaether.domain.users.dto.LoginRequestDto;
 import hh5.twogaether.domain.users.dto.SignUpRequestDto;
 import hh5.twogaether.domain.users.entity.User;
@@ -23,37 +24,46 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+
     @Transactional
     public void createUser(SignUpRequestDto signupRequestDto) throws Exception {
-        String encryptPassword = passwordEncoder.encode(signupRequestDto.getPassword());
-        SignUpRequestDto encryptSignUpRequestDto = new SignUpRequestDto(signupRequestDto, encryptPassword);
-        User user = new User(encryptSignUpRequestDto);
-        emailService.sendSimpleMessage(user.getNickname(), user.getUsername());
+        User user = getEncryptedUser(signupRequestDto);
         userRepository.save(user);
+        emailService.sendSimpleMessage(user.getNickname(), user.getUsername());
     }
 
+    @Transactional(readOnly = true)
     public User login(LoginRequestDto loginRequestDto) {
         User users = userRepository.findByUsername(loginRequestDto.getEmail())
                 .orElseThrow(() -> new BadCredentialsException(INCORRECT_SIGN_IN_TRY.getDescription()));
-
-        if (!passwordEncoder.matches(loginRequestDto.getPassword(), users.getPassword())) {
-            throw new BadCredentialsException(INCORRECT_SIGN_IN_TRY.getDescription());
-        }
-        if (users.getEmailCheck() == 0) {
-            throw new BadCredentialsException(INVALID_EMAIL_ACCOUNT.getDescription());
-        } //  로그인 시 이메일 인증 여부
-        if (users.isDelete()) {
-            throw new BadCredentialsException(ALREADY_DELETED_ID.getDescription());
-        }
+        passwordValidation(loginRequestDto, users);
+        checkEmailValidation(users);
         return users;
     }
 
-
+    @Transactional(readOnly = true)
     public void checkEmailDuplication(String email) {
-        Optional<User> foundUser = userRepository.findByUsername(email);
-
-        if (foundUser.isPresent()) {
+        Optional<EmailOnlyDto> foundEmail = userRepository.findByEmail(email);
+        if (foundEmail.isPresent()) {
             throw new IllegalArgumentException(EXISTED_EMAIL.getDescription());
+        }
+    }
+
+    private User getEncryptedUser(SignUpRequestDto signupRequestDto) {
+        String encryptPassword = passwordEncoder.encode(signupRequestDto.getPassword());
+        User user = new User(new SignUpRequestDto(signupRequestDto, encryptPassword));
+        return user;
+    }
+
+    private static void checkEmailValidation(User users) {
+        if (users.getEmailCheck() == 0) {
+            throw new BadCredentialsException(INVALID_EMAIL_ACCOUNT.getDescription());
+        }
+    }
+
+    private void passwordValidation(LoginRequestDto loginRequestDto, User users) {
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), users.getPassword())) {
+            throw new BadCredentialsException(INCORRECT_SIGN_IN_TRY.getDescription());
         }
     }
 }

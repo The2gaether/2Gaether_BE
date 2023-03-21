@@ -36,7 +36,7 @@ public class Dog extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "dog", orphanRemoval = true)
+    @OneToMany(mappedBy = "dog")
     private List<Image> dogImages = new ArrayList<>();
 
     public Dog(DogSignupRequestDto dogSignupRequestDto, User user) {

@@ -25,7 +25,7 @@ public class MatchController {
     //매칭 상대 보기
     @GetMapping
     public ResponseEntity<MatchDogResponseDto> showMatches(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return new ResponseEntity<>(matchService.getMatches(userDetails.getUser().getId()), OK);
+        return new ResponseEntity<>(matchService.getMatches(userDetails.getUser()), OK);
     }
 
     //좋아요
@@ -47,5 +47,11 @@ public class MatchController {
                                      @PathVariable Long dogId) {
         matchService.passUser(dogId,userDetails.getUser().getId());
         return new ResponseEntity<>("싫어요 완료", CREATED);
+    }
+
+    @PostMapping("/superpowerbeam")
+    public String dayReset() {
+        matchService.resetRejects();
+        return "싫어요 리셋 완료";
     }
 }
