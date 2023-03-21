@@ -12,8 +12,11 @@
 
 ## 1. 제작 기간 & 팀원 소개
 
-    [BE]
-  - 고현우 : cicd 연결, nginx 등 서버 설정 및 연결, 소셜로그인, 좋아요와 매칭 기능, 이미지 구현
+  - **기술 스택 : Java11, Spring boot 2.7.8, Spring Data JPA, MYSQL 8.0, Querydsl**
+  - 기간  :  2023.02.02 ~ 2023.03.15
+
+- Backend
+  - 고현우 : cicd 연결, nginx 등 서버 설정 및 연결, 소셜로그인, 좋아요와 매칭 기능, 이미지 저장소 구현
   - 이상휘 : 이메일 인증, 유저 정보
   - 이성진 : 채팅 기능, 강아지 정보
 
@@ -24,7 +27,8 @@
 ![image](https://user-images.githubusercontent.com/119824778/226522556-e856bfc9-8f4e-4fd1-aa10-56316c436490.png)
 
 <br>
-<img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/LINUX-005496?style=for-the-badge&logo=linux&logoColor=white"><img src="https://img.shields.io/badge/NGINX-3D1332?style=for-the-badge&logo=nginx&logoColor=white"><img src="https://img.shields.io/badge/STOMPJS-lightgrey?style=for-the-badge&logo=stompjs&logoColor=white">
+
+[아키텍쳐 도입 배경 링크](https://pineapple-wrist-347.notion.site/82ef25bf258341a4a31fbad9f7a0e786)
 
 <br>
 
@@ -39,11 +43,11 @@
 
 ## 4. 핵심기능
 
-1. 로그인 기능 구현 ( 기본 회원가입 + 카카오톡 DB 회원가입 )
-2. 강아지 추가하기 ( Form Data 방식으로 데이터 값을 백엔드와 교류 + GPS 데이터를 로컬기능을 통해서 위도경도값을 DB로 보내는 방식)
-3. 데이터 값을 기반으로 유저 매칭 (유저간의 거리 비교 및 데이터를 가져와서 유저간의 매칭을 가능하게 해주는 기능)
-4. 좋아요 기능 구현(받고 보낸 좋아요 데이터를 따로 모으며 프로필 확인과 채팅을 위해 매칭되는 기능 구현)
-5. Stompjs를 통해 채팅 기능 구현 ( 채팅기능을 구현하기위해 필요하다 생각한 개념입니다. )
+1. 로그인 기능 구현 ( 기본 회원가입 + 카카오톡 소셜 로그인 )
+2. 유저 정보 및 강아지 추가하기 ( 카카오지도 Open API를 통해 현재 위치의 위도,경도값을 저장하여 거리를 계산 )
+3. 데이터 값을 기반으로 유저 매칭 ( 유저의 강아지 정보 및 거리 비교를 통해 원하는 상대와 매칭이 가능 )
+4. 좋아요 기능 구현 ( 보낸 / 받은 좋아요 페이지에서 상대 강아지 프로필 확인 및 실시간 채팅 가능 )
+5. Stompjs를 통해 채팅 기능 구현 ( 실시간 채팅을 위해 STOMP 프로토콜 사용 )
 
 <br>
 
@@ -53,13 +57,4 @@
 
 <br>
 
-## 5. 아키텍쳐 도입 배경
-[아키텍쳐 도입 배경 링크](https://pineapple-wrist-347.notion.site/82ef25bf258341a4a31fbad9f7a0e786)
 
-<br>
-
-## 7. 개인 회고
-
- - 고현우 : 
- - 이상휘 : 
- - 이성진 : 
