@@ -24,7 +24,7 @@ public class DogService {
 
     // 회원 가입시 입력해야하는 강아지 정보
     @Transactional
-    public Dog saveMyDog(DogSignupRequestDto dogSignupRequestDto, User user) {
+    public Dog saveDog(DogSignupRequestDto dogSignupRequestDto, User user) {
         Dog dog = new Dog(dogSignupRequestDto, user);
         dogRepository.save(dog);
         return dog;
@@ -56,9 +56,6 @@ public class DogService {
     public void deleteMyDog(Long id,User user) {
         Dog dog = dogRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException(NOT_EXISTED_ID.getDescription())
-        );
-        userRepository.findById(user.getId()).orElseThrow(
-                ()-> new IllegalArgumentException(NOT_EXISTED_ID.getDescription())
         );
         if(user.getId().equals(dog.getCreatedBy())){
             dog.deleteDog();

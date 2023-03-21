@@ -36,7 +36,7 @@ public class DogController {
     @PostMapping
     private ResponseEntity<ResponseMessageDto> addMyDog(@ModelAttribute DogSignupRequestDto dogRequestDto,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Dog savedDog = dogService.saveMyDog(dogRequestDto, userDetails.getUser());
+        Dog savedDog = dogService.saveDog(dogRequestDto, userDetails.getUser());
         List<String> imgUrls = imageService.upload(dogRequestDto.getImages(),savedDog);
         log.info("imgUrls = " + imgUrls);
         return new ResponseEntity<>(new ResponseMessageDto(CREATED.value(), "강아지 정보 저장 완료"), CREATED);
