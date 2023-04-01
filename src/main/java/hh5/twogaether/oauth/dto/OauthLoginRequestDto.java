@@ -3,7 +3,7 @@ package hh5.twogaether.oauth.dto;
 import lombok.Getter;
 
 @Getter
-public class KakaoLoginRequestDto {
+public class OauthLoginRequestDto {
 
     private String code;
 }
