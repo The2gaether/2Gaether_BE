@@ -75,23 +75,46 @@ public class OauthService {
     }
 
     // 2. 받아온 "액세스 토큰"으로 카카오 API 호출 -> 카카오 사용자 정보 가져오기
+//    private String getUerProfile(String providerName, OauthTokenResponseDto tokenResponse,
+//                                 ClientRegistration provider) throws IllegalAccessException {
+//        Map<String, Object> userAttributes = getUserAttributes(provider, tokenResponse);
+//        Oauth2UserInfo oauth2UserInfo = null;
+//        if (providerName.equals("kakao")) {
+//            oauth2UserInfo = new KakaoUserInfo(userAttributes);
+//        } else if (providerName.equals("google")) {
+//            oauth2UserInfo = new GoogleUserInfo(userAttributes);
+//        } else {
+//            throw new IllegalAccessException("허용되지 않은 접근입니다.");
+//        }
+//        String provide = oauth2UserInfo.getProvider();
+//        String nickname = oauth2UserInfo.getNickname();
+//        String email = oauth2UserInfo.getEmail();
+//
+//        Optional<User> foundUser = userRepository.findByUsername(email);
+//
+//        if (foundUser.isEmpty()) {
+//            User user = new User(nickname, email, provide, USER);
+//            userRepository.save(user);
+//        }
+//        return email;
+//    }
+
     private String getUerProfile(String providerName, OauthTokenResponseDto tokenResponse,
                                  ClientRegistration provider) throws IllegalAccessException {
         Map<String, Object> userAttributes = getUserAttributes(provider, tokenResponse);
-        Oauth2UserInfo oauth2UserInfo = null;
-        if (providerName.equals("kakao")) {
-            oauth2UserInfo = new KakaoUserInfo(userAttributes);
-        } else {
-            throw new IllegalAccessException("허용되지 않은 접근입니다.");
-        }
-        String provide = oauth2UserInfo.getProvider();
-        String nickname = oauth2UserInfo.getNickname();
-        String email = oauth2UserInfo.getEmail();
+        log.info("[userAttributes] = {}",userAttributes);
+        OAuthAttributes attributes = OAuthAttributes.of(providerName, userAttributes);
+        log.info("[attributes] = {}",attributes);
+
+        String nickname = attributes.getName();
+        log.info("[nickname] = {}",attributes.getName());
+        String email = attributes.getEmail();
+        log.info("[email] = {}", attributes.getEmail());
 
         Optional<User> foundUser = userRepository.findByUsername(email);
 
         if (foundUser.isEmpty()) {
-            User user = new User(nickname, email, provide, USER);
+            User user = new User(nickname == null ? "닉네임을 설정해주세요." : nickname, email, providerName, USER);
             userRepository.save(user);
         }
         return email;
