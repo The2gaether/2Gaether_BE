@@ -1,7 +1,7 @@
 package hh5.twogaether.oauth.controller;
 
 import hh5.twogaether.oauth.service.OauthService;
-import hh5.twogaether.oauth.dto.KakaoLoginRequestDto;
+import hh5.twogaether.oauth.dto.OauthLoginRequestDto;
 import hh5.twogaether.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +25,11 @@ public class OauthController {
     // redirect url 과 authorization code 를 받아온다.
     @PostMapping("/login/oauth/{providerName}")
     public String login(@PathVariable String providerName,
-                        @RequestBody KakaoLoginRequestDto kakaoRequestDto,
+                        @RequestBody OauthLoginRequestDto oauthLoginRequestDto,
                         HttpServletResponse response) throws IllegalAccessException {
-        String email = oauthService.login(providerName, kakaoRequestDto.getCode());
+        log.info("[providerName] = {}",providerName);
+        log.info("[code] = {}",oauthLoginRequestDto.getCode());
+        String email = oauthService.login(providerName, oauthLoginRequestDto.getCode());
 
         // access(& refresh) 토큰 만들기
         response.addHeader(AUTHORIZATION_HEADER, jwtUtil.createToken(email));
