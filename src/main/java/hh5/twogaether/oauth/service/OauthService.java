@@ -34,21 +34,17 @@ public class OauthService {
     /**
      * @InMemoryRepository 는 application-oauth properties 정보를 담고 있음
      * @getToken() 넘겨받은 code 로 OAuth 서버에 Token 요청
-     * @getUserProjile 첫 로그인 시 회원가입
-     * TODO 유저 인증 후 Jwt AccessToken, Refresh Token 생성
+     * @getUserProjile 첫 로그인 시 회원가입 후 email 반환(프론트 요청)
+     * TODO 유저 인증 후 Refresh Token 생성
      */
     @Transactional
     public String login(String providerName, String code) throws IllegalAccessException {
-
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
-        // 1. authorization code 로 액세스 토큰 요청해서 받아오기
         OauthTokenResponseDto tokenResponse = getToken(code, provider);
-        // 2. 액세스 토큰으로 유저 정보 받아오기
         String email = getUerProfile(providerName, tokenResponse, provider);
         return email;
     }
 
-    // 1-1. authorization code 로 토큰 요청 webflux 로 WebClient 사용해서 요청
     private OauthTokenResponseDto getToken(String code, ClientRegistration provider) {
         return WebClient.create()
                 .post()
@@ -63,7 +59,6 @@ public class OauthService {
                 .block();
     }
 
-    // 1-2. HTTP Body 생성
     private MultiValueMap<String, String> requestToken(String code, ClientRegistration provider) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("code", code);
@@ -74,53 +69,19 @@ public class OauthService {
         return formData;
     }
 
-    // 2. 받아온 "액세스 토큰"으로 카카오 API 호출 -> 카카오 사용자 정보 가져오기
-//    private String getUerProfile(String providerName, OauthTokenResponseDto tokenResponse,
-//                                 ClientRegistration provider) throws IllegalAccessException {
-//        Map<String, Object> userAttributes = getUserAttributes(provider, tokenResponse);
-//        Oauth2UserInfo oauth2UserInfo = null;
-//        if (providerName.equals("kakao")) {
-//            oauth2UserInfo = new KakaoUserInfo(userAttributes);
-//        } else if (providerName.equals("google")) {
-//            oauth2UserInfo = new GoogleUserInfo(userAttributes);
-//        } else {
-//            throw new IllegalAccessException("허용되지 않은 접근입니다.");
-//        }
-//        String provide = oauth2UserInfo.getProvider();
-//        String nickname = oauth2UserInfo.getNickname();
-//        String email = oauth2UserInfo.getEmail();
-//
-//        Optional<User> foundUser = userRepository.findByUsername(email);
-//
-//        if (foundUser.isEmpty()) {
-//            User user = new User(nickname, email, provide, USER);
-//            userRepository.save(user);
-//        }
-//        return email;
-//    }
-
     private String getUerProfile(String providerName, OauthTokenResponseDto tokenResponse,
                                  ClientRegistration provider) throws IllegalAccessException {
         Map<String, Object> userAttributes = getUserAttributes(provider, tokenResponse);
-        log.info("[userAttributes] = {}",userAttributes);
         OAuthAttributes attributes = OAuthAttributes.of(providerName, userAttributes);
-        log.info("[attributes] = {}",attributes);
-
         String nickname = attributes.getName();
-        log.info("[nickname] = {}",attributes.getName());
         String email = attributes.getEmail();
-        log.info("[email] = {}", attributes.getEmail());
-
         Optional<User> foundUser = userRepository.findByUsername(email);
-
         if (foundUser.isEmpty()) {
-            User user = new User(nickname == null ? "닉네임을 설정해주세요." : nickname, email, providerName, USER);
-            userRepository.save(user);
+            userRepository.save(new User(nickname, email, providerName, USER));
         }
         return email;
     }
 
-    // 2-2. HTTP RequestBody 생성 및 Response
     private Map<String, Object> getUserAttributes(ClientRegistration provider,
                                                   OauthTokenResponseDto tokenResponse) {
         return WebClient.create()
