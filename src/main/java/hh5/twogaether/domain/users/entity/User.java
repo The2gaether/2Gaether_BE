@@ -7,7 +7,6 @@ import hh5.twogaether.util.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,14 +23,13 @@ public class User extends TimeStamped {
     @Column(name = "user_id")
     private Long id;
 
+    // username이 들어오는 필드
     @Column(nullable = false)
-    private String nickname;    // username이 들어오는 필드
+    private String nickname;
 
-    //username을 spring에서 사용중이라 중복 허용 시 spring과 충돌
-    //(front)username -> (back)nickname
-    //(front)email -> (back)username@Column(nullable = false, unique = true)                                            //(front)email -> (back)username
+    // email이 들어오는 필드
     @Column(nullable = false)
-    private String username;    // 이게 email이 들어오는 필드
+    private String username;
     private String password;
 
     private Double latitude = 37.537187;   //  위도
@@ -42,10 +40,9 @@ public class User extends TimeStamped {
     private UserRoleEnum role;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
     private int emailCheck;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private List<Dog> dogs = new ArrayList<>();
 
     private boolean isDelete = false;
@@ -53,7 +50,7 @@ public class User extends TimeStamped {
     private int ranges = 400;
 
     public User(String nickname, String email, String provider, UserRoleEnum role) {
-        this.nickname = nickname;
+        this.nickname = nickname == null ? "닉네임을 설정해주세요." : nickname;
         this.username = email;
         this.password = provider;
         this.role = role;
@@ -66,10 +63,6 @@ public class User extends TimeStamped {
         this.role = signupRequestDto.getUserRole();
     }
 
-    public void updateUserEmailCheck() {
-        this.emailCheck = 1;
-    }
-
     public void patchUser(MyPageRequestDto myPageRequestDto) {
         this.nickname = (myPageRequestDto.getUsername() == null) ? this.getNickname() : myPageRequestDto.getUsername();
         this.password = (myPageRequestDto.getPassword() == null) ? this.getPassword() : myPageRequestDto.getPassword();
@@ -77,6 +70,10 @@ public class User extends TimeStamped {
         this.longitude = (myPageRequestDto.getLongitude() == null) ? this.getLongitude() : myPageRequestDto.getLongitude();
         this.address = (myPageRequestDto.getAddress() == null) ? this.getAddress() : myPageRequestDto.getAddress();
         this.ranges = (myPageRequestDto.getRange() == 0) ? this.getRanges() : myPageRequestDto.getRange();
+    }
+
+    public void updateUserEmailCheck() {
+        this.emailCheck = 1;
     }
 
     public void deleteUser() {
