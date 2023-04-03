@@ -35,34 +35,29 @@ public class UserController {
         return "hello world!";
     }
 
-    //회원 가입
     @PostMapping("/users/signup")
     public ResponseEntity<ResponseMessageDto> signUp(@RequestBody SignUpRequestDto signupRequestDto) throws Exception {
-        userService.checkEmailDuplication(signupRequestDto.getEmail());
         userService.createUser(signupRequestDto);
-
         return new ResponseEntity<>(new ResponseMessageDto(CREATED.value(), "회원가입 완료"), CREATED);
     }
 
     @PostMapping("/users/login")
     public ResponseEntity<LoginResponseDto> loginUser(@RequestBody LoginRequestDto loginRequestDto,
                                                       HttpServletResponse response) {
-
         User user = userService.login(loginRequestDto);
         response.addHeader(AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
-
         return new ResponseEntity<>(new LoginResponseDto(OK.value(), "로그인 완료", user.getUsername()), OK);
     }
 
     @PostMapping("/users/dupcheck")
-    public ResponseEntity<ResponseMessageDto> dupcheck(@RequestBody SignUpRequestDto signUpRequestDto) {
+    public ResponseEntity<ResponseMessageDto> emailDupcheck(@RequestBody SignUpRequestDto signUpRequestDto) {
         userService.checkEmailDuplication(signUpRequestDto.getEmail());
         return new ResponseEntity<>(new ResponseMessageDto(OK.value(), "사용 가능한 이메일입니다."), OK);
     }
 
     @DeleteMapping("/users/delete")
     public ResponseEntity<ResponseMessageDto> deleteUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        myPageService.deleteMyPage(userDetails.getUser().getId());
+        userService.deleteUser(userDetails.getUser().getId());
         return new ResponseEntity<>(new ResponseMessageDto(OK.value(), "사용자 정보를 삭제합니다."), OK);
     }
 }
