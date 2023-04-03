@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("select u from User u where u.isDelete = false ")
-    List<User> findAllNotDeletedUser();
+    @Query("select u from User u left join fetch u.dogs where u.id =:id")
+    User findByIdFetchJoin(@Param("id") Long id);
 
     @Query("select u from User u where u.id = :id and u.isDelete = false")
     User findNotDeletedUserById(@Param("id") Long id);

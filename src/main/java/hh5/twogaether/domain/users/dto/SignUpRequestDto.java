@@ -30,7 +30,6 @@ public class SignUpRequestDto {
     public SignUpRequestDto(SignUpRequestDto signupRequestDto, String encryptPassword) {
         this.username = signupRequestDto.getUsername();
         this.email = signupRequestDto.getEmail();
-//        this.userRole = signupRequestDto.getUserRole();
         this.password = encryptPassword;
     }
 

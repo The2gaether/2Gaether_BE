@@ -26,17 +26,17 @@ public class UserService {
 
     @Transactional
     public void createUser(SignUpRequestDto signupRequestDto) throws Exception {
-        User user = getEncryptedUser(signupRequestDto);
+        checkEmailDuplication(signupRequestDto.getEmail());
+        User user = encryptUser(signupRequestDto);
         userRepository.save(user);
         emailService.sendSimpleMessage(user.getNickname(), user.getUsername());
     }
 
     @Transactional(readOnly = true)
     public User login(LoginRequestDto loginRequestDto) {
-        User users = userRepository.findByUsername(loginRequestDto.getEmail())
-                .orElseThrow(() -> new BadCredentialsException(INCORRECT_SIGN_IN_TRY.getDescription()));
+        User users = emailValidation(loginRequestDto);
         passwordValidation(loginRequestDto, users);
-        checkEmailValidation(users);
+        checkEmailAuth(users);
         return users;
     }
 
@@ -48,21 +48,33 @@ public class UserService {
         }
     }
 
-    private User getEncryptedUser(SignUpRequestDto signupRequestDto) {
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = userRepository.findByIdFetchJoin(id);
+        user.deleteUser();
+    }
+
+    private User encryptUser(SignUpRequestDto signupRequestDto) {
         String encryptPassword = passwordEncoder.encode(signupRequestDto.getPassword());
         User user = new User(new SignUpRequestDto(signupRequestDto, encryptPassword));
         return user;
     }
 
-    private static void checkEmailValidation(User users) {
-        if (users.getEmailCheck() == 0) {
-            throw new BadCredentialsException(INVALID_EMAIL_ACCOUNT.getDescription());
-        }
+    private User emailValidation(LoginRequestDto loginRequestDto) {
+        User users = userRepository.findByUsername(loginRequestDto.getEmail())
+                .orElseThrow(() -> new BadCredentialsException(INCORRECT_SIGN_IN_TRY.getDescription()));
+        return users;
     }
 
     private void passwordValidation(LoginRequestDto loginRequestDto, User users) {
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), users.getPassword())) {
             throw new BadCredentialsException(INCORRECT_SIGN_IN_TRY.getDescription());
+        }
+    }
+
+    private static void checkEmailAuth(User users) {
+        if (users.getEmailCheck() == 0) {
+            throw new BadCredentialsException(INVALID_EMAIL_ACCOUNT.getDescription());
         }
     }
 }
